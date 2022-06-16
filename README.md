@@ -383,3 +383,303 @@
 <script src="js/app.js"></script>
 </body>
 </html>
+body {
+    background-color: rgb(0, 0, 0);
+}
+h1{
+    text-align: center;
+    color: white;
+}
+h4{
+    font-size: 16px;
+    font-weight: 700;
+}
+header{
+    padding: 10px 0 0 0;
+    text-align: center;
+}
+.navct {
+    color: rgb(240, 127, 52);
+    padding-top: 5px; 
+    text-transform: uppercase;
+
+}
+.navct a{
+    color:white;
+    text-decoration: none;
+}
+@media (min-whidth: 750px){
+    header{
+        text-align: left;
+    }
+}
+
+ul{
+    list-style: none;
+}
+#hero {
+    background-image: url(../img/tiendaa.jpg);
+    position: relative;
+    z-index: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 200px;
+}
+#hero::before{
+    content: "";
+    background-color: rgba(184, 102, 35, 0.45);
+    position:absolute;
+    top: 0;
+    min-height: 100%;
+    left: 0;
+    right: 0;
+    z-index: -1;
+}
+ #encabezado {
+    margin: 30px 0;
+ } 
+ .submenu {
+    position: relative;
+ }
+ .submenu #carri {
+    display: none;
+ }
+
+ .submenu:hover #carri {
+    display: block;
+    position: absolute;
+    right: 0;
+    color: white;
+    top: 100%;
+    z-index: 1;
+    background-color: rgb(34, 28, 32);
+    padding: 20px;
+    min-height: 400px;
+    min-height: 300px;
+ }
+.barra {
+        padding: 10px 0;
+        background: #f0611e;
+    }
+    
+    #lista-tenis .row {
+        margin-bottom: 20px;
+    }
+    .agregar-carrito {
+        margin: 10px;
+    }
+
+    .carri {
+        text-align: center;
+        box-shadow: 0 25px 98px 0 rgb(0 0 0/3%);
+        background: #ffff;
+    }
+    @media (min-width: 550px) {
+        .carri {
+            text-align: left;
+        }
+    }
+    .info-carri {
+        padding: 10px 20px;
+        color: white;
+    }
+    .info-carri p,
+    .carri h4{
+        margin-bottom: 5px;
+    }
+    .info-carri .precio {
+        text-decoration: line-through;
+        font-size: 18px;
+        margin-top:10px;
+    }
+    .info-carri .precio span{
+        font-weight: 700;
+        font-size: 22px;
+    }
+
+    .footer {
+        border-top: 1px solid white;
+        margin-top: 40px;
+        padding-top: 40px;
+    }
+
+    .footer .catalogo a{
+        display: block;
+        color: white;
+        margin-bottom: 1078px;
+        text-decoration: none;
+
+    }
+    // Variables
+const baseDeDatos = [
+    {
+        id: 1,
+        nombre: 'Alexander Mcqueen',
+        precio: $9499,
+        imagen: 'zapato.jpg'
+    },
+    {
+        id: 2,
+        nombre: 'Adidas',
+        precio: $1999,
+        imagen: 'adi.jpg'
+    },
+    {
+        id: 3,
+        nombre: 'Adidas',
+        precio: $1899,
+        imagen: 'images (2).jpg'
+    },
+    {
+        id: 4,
+        nombre: 'Converse',
+        precio: $1299,
+        imagen: 'conver.jpg'
+    }
+
+];
+
+let carrito = [];
+const divisa = '€';
+const DOMitems = document.querySelector('#items');
+const DOMcarrito = document.querySelector('#carrito');
+const DOMtotal = document.querySelector('#total');
+const DOMbotonVaciar = document.querySelector('#boton-vaciar');
+
+// Funciones
+
+/**
+ * Dibuja todos los productos a partir de la base de datos. No confundir con el carrito
+ */
+function renderizarProductos() {
+    baseDeDatos.forEach((info) => {
+        // Estructura
+        const miNodo = document.createElement('div');
+        miNodo.classList.add('card', 'col-sm-4');
+        // Body
+        const miNodoCardBody = document.createElement('div');
+        miNodoCardBody.classList.add('card-body');
+        // Nombre
+        const miNodoNombre = document.createElement('h4');
+        miNodoNombre.classList.add('card-+Nombre');
+        miNodoNombre.textContent = info.nombre;
+        // Imagen
+        const miNodoImagen = document.createElement('img');
+        miNodoImagen.classList.add('img-fluid');
+        miNodoImagen.setAttribute('src', info.imagen);
+        // Precio
+        const miNodoPrecio = document.createElement('p');
+        miNodoPrecio.classList.add('card-text');
+        miNodoPrecio.textContent = `${info.precio}${divisa}`;
+        // Boton 
+        const miNodoBoton = document.createElement('button');
+        miNodoBoton.classList.add('btn', 'btn-primary');
+        miNodoBoton.textContent = '+';
+        miNodoBoton.setAttribute('marcador', info.id);
+        miNodoBoton.addEventListener('click', agregaralcarrito);
+        // Insertamos
+        miNodoCardBody.appendChild(miNodoImagen);
+        miNodoCardBody.appendChild(miNodoNombre);
+        miNodoCardBody.appendChild(miNodoPrecio);
+        miNodoCardBody.appendChild(miNodoBoton);
+        miNodo.appendChild(miNodoCardBody);
+        DOMitems.appendChild(miNodo);
+    });
+}
+
+/**
+ * Evento para añadir un producto al carrito de la compra
+ */
+function anyadirProductoAlCarrito(evento) {
+    // Anyadimos el Nodo a nuestro carrito
+    carrito.push(evento.target.getAttribute('marcador'))
+    // Actualizamos el carrito 
+    renderizarCarrito();
+
+}
+
+/**
+ * Dibuja todos los productos guardados en el carrito
+ */
+function renderizarCarrito() {
+    // Vaciamos todo el html
+    DOMcarrito.textContent = '';
+    // Quitamos los duplicados
+    const carritoSinDuplicados = [...new Set(carrito)];
+    // Generamos los Nodos a partir de carrito
+    carritoSinDuplicados.forEach((item) => {
+        // Obtenemos el item que necesitamos de la variable base de datos
+        const miItem = baseDeDatos.filter((itemBaseDatos) => {
+            // ¿Coincide las id? Solo puede existir un caso
+            return itemBaseDatos.id === parseInt(item);
+        });
+        // Cuenta el número de veces que se repite el producto
+        const numeroUnidadesItem = carrito.reduce((total, itemId) => {
+            // ¿Coincide las id? Incremento el contador, en caso contrario no mantengo
+            return itemId === item ? total += 1 : total;
+        }, 0);
+        // Creamos el nodo del item del carrito
+        const miNodo = document.createElement('li');
+        miNodo.classList.add('list-group-item', 'text-right', 'mx-2');
+        miNodo.textContent = `${numeroUnidadesItem} x ${miItem[0].nombre} - ${miItem[0].precio}${divisa}`;
+        // Boton de borrar
+        const miBoton = document.createElement('button');
+        miBoton.classList.add('btn', 'btn-danger', 'mx-5');
+        miBoton.textContent = 'X';
+        miBoton.style.marginLeft = '1rem';
+        miBoton.dataset.item = item;
+        miBoton.addEventListener('click', borrarItemCarrito);
+        // Mezclamos nodos
+        miNodo.appendChild(miBoton);
+        DOMcarrito.appendChild(miNodo);
+    });
+    // Renderizamos el precio total en el HTML
+    DOMtotal.textContent = calcularTotal();
+}
+
+/**
+ * Evento para borrar un elemento del carrito
+ */
+function borrarItemCarrito(evento) {
+    // Obtenemos el producto ID que hay en el boton pulsado
+    const id = evento.target.dataset.item;
+    // Borramos todos los productos
+    carrito = carrito.filter((carritoId) => {
+        return carritoId !== id;
+    });
+    // volvemos a renderizar
+    renderizarCarrito();
+}
+
+/**
+ * Calcula el precio total teniendo en cuenta los productos repetidos
+ */
+function calcularTotal() {
+    // Recorremos el array del carrito 
+    return carrito.reduce((total, item) => {
+        // De cada elemento obtenemos su precio
+        const miItem = baseDeDatos.filter((itemBaseDatos) => {
+            return itemBaseDatos.id === parseInt(item);
+        });
+        // Los sumamos al total
+        return total + miItem[0].precio;
+    }, 0).toFixed(2);
+}
+
+/**
+ * Varia el carrito y vuelve a dibujarlo
+ */
+function vaciarCarrito() {
+    // Limpiamos los productos guardados
+    carrito = [];
+    // Renderizamos los cambios
+    renderizarCarrito();
+}
+
+// Eventos
+DOMbotonVaciar.addEventListener('click', vaciarCarrito);
+
+// Inicio
+renderizarProductos();
+renderizarCarrito();
